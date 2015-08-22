@@ -31,10 +31,24 @@ Level.prototype = {
 		this.collisionLayer.alpha = 0;
 		this.currentMap.setCollisionBetween(1, 400, true, this.collisionLayer);
 
-		for(var i =0; i < 10; i++){
-			var zombie = new Zombie(Math.floor(Math.random()*this.currentMap.width)*32, Math.floor(Math.random()*this.currentMap.height)*32);
-			zombie.create();
-			this.enemies.push(zombie);
+
+		this.enemies.forEach(function(e){
+			e.sprite.destroy();
+		}, this);
+		this.enemies.length = []; 
+
+		var tiles = this._getNonSolidTiles();
+		for(var i = 0; i < 1; i++){
+			var row = 0;
+			do {
+				var row = Math.floor(Math.random()*tiles.length);
+			}while(tiles[row].length === 0);
+
+			var col = Math.floor(Math.random()*tiles[row].length);
+
+			var enemy = new Zombie(tiles[row][col].x*this.currentMap.tileWidth, tiles[row][col].y*this.currentMap.tileHeight);
+			enemy.create();
+			this.enemies.push(enemy);
 		}
 	},
 
@@ -47,6 +61,21 @@ Level.prototype = {
 		player.sprite.x = parseInt(locationParts[0])*this.currentMap.tileWidth + 16;
 		player.sprite.y = parseInt(locationParts[1])*this.currentMap.tileHeight + 16;
 		player.sprite.bringToTop();
+	},
+
+	_getNonSolidTiles: function(){
+		var tiles = this.collisionLayer.layer.data.slice(0);
+		for(var row = tiles.length - 1; row >= 0; row--){
+			tiles[row] = tiles[row].slice(0);
+
+			for(var col = tiles[row].length - 1; col >= 0; col--){
+				if(tiles[row][col].index != -1){
+					tiles[row].splice(col, 1);
+				}
+			}
+		}
+
+		return tiles;
 	}
 
 

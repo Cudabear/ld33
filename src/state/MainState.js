@@ -28,11 +28,16 @@ MainState.prototype = {
     	}, null, this);
 
     	this.level.enemies.forEach(function(e){
-    		e.update();
+    		e.update(this.player, this.level.currentMap);
     	}, this);
+
     },
 
     render: function(){
-    	//game.debug.body(this.player.sprite);
+    	game.debug.body(this.player.sprite);
+
+    	this.level.enemies.forEach(function(e){
+    		game.debug.body(e.sprite);
+    	}, this);
     }
 }

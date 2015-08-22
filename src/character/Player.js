@@ -19,6 +19,8 @@ Player.prototype = {
 
 		this.sprite.animations.add('idle', [0, 1, 2, 3, 4, 5]);
 		this.sprite.animations.add('walk', [6, 7, 8, 9]);
+
+		game.input.onDown.add(this.onClick, this);
 	},
 
 	update: function(){
@@ -50,5 +52,9 @@ Player.prototype = {
 
 	render: function(){
 
+	},
+
+	onClick: function(){
+		console.log('click!');
 	}
 }
