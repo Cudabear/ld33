@@ -4,7 +4,7 @@ var game;
 
 window.onload = function(){
 	//create a new game and run it
-	game = new Phaser.Game(WIDTH, HEIGHT, Phaser.OPENGL, 'game');
+	game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game');
 
 	//add the game states
 	game.state.add('StartupState', new StartupState());
@@ -12,5 +12,5 @@ window.onload = function(){
 	game.state.add('MainState', new MainState());
 
 	//kickoff the starting state
-	game.state.start('StartupState');
+	game.state.start('LoadState');
 }
