@@ -26,7 +26,7 @@ Zombie.prototype = {
 		this.sprite.animations.add('walk', [6, 7, 8, 9]);
 	},
 
-	update: function(player, map, collisionLayer){
+	update: function(player, map, collisionLayer, level){
 		if(this.sprite.body.velocity.x > 0 || this.sprite.body.velocity.y > 0){
 			this.sprite.animations.play('walk', 8, false);
 		}else{

@@ -23,8 +23,12 @@ Gun.prototype = {
 		this.shootLineSprite.x = game.camera.x;
 		this.shootLineSprite.y = game.camera.y;
 
-		if(this.shootCooldown > 0){
+		if(this.shootCooldown > 0 ){
 			this.shootCooldown--;
+
+			if(this.shootCooldown == 1 && this.shooter.ammunition == 0 && this.shooter.clips > 0){
+				this.shooter.ammunition = this.shooter.clipSize; this.shooter.clips--;
+			}
 		}
 	},
 
@@ -33,7 +37,8 @@ Gun.prototype = {
 	},
 
 	shoot: function(collisionLayer, enemies){
-		if(this.shootCooldown == 0){
+		if(this.shootCooldown == 0 && this.shooter.ammunition > 0){
+			this.shooter.ammunition--;
 			var startX = this.shooter.sprite.x; 
 			var startY = this.shooter.sprite.y; 
 			var endX = startX + 1000 * Math.cos(game.physics.arcade.angleToPointer(this.shooter.sprite));
@@ -69,7 +74,13 @@ Gun.prototype = {
 			this.shootLineSprite.alpha = 1;
 			this.shootLineSprite.bringToTop();
 
-			this.shootCooldown = 30;
+			if(this.shooter.ammunition > 0){
+				this.shootCooldown = 15;
+			}else{
+				this.shootCooldown = 180;
+			}
+		}else if(this.shootCooldown == 0 && this.shooter.ammunition == 0 && this.shooter.clips > 0){
+			this.shootCooldown = 180;
 		}
 	},
 

@@ -58,8 +58,7 @@ MainState.prototype = {
 
 	    	game.physics.arcade.collide(this.player.sprite, this.level.collisionLayer, function(e, f){ 
 	    		if(f.properties.destination){
-	    			this.level.handleTeleport(f, this.player);
-	    			game.camera.focusOn(this.player.sprite);
+	    			this.level.handleTeleport(f, this.player, this);
 	    		}
 
 	    		if(f.properties.action){
@@ -72,7 +71,15 @@ MainState.prototype = {
 
 	    		e.update(this.player, this.level.currentMap, this.level.collisionLayer);
 
+	    		this.level.enemies.forEach(function(me){
+	    			game.physics.arcade.collide(me.sprite, e.sprite);
+	    		}, this);
+
 	    		if(e.health <= 0){
+	    			if(e.onDead){
+	    				e.onDead();
+	    			}
+
 	    			e.sprite.destroy();
 	    			this.level.enemies.splice(i, 1);
 	    		}
@@ -110,11 +117,16 @@ MainState.prototype = {
     	if(this.textDisplayed){
 	    	this.textStageIndex++;
 
-	    	if(this.textStageIndex > this.textStages.length){
+	    	if(this.textStageIndex >= this.textStages.length){
 	    		this.textDisplayed = false;
 	    		this.textbox.alpha = 0;
 	    		this.textboxText.alpha = 0;
 	    		this.textboxName.alpha = 0;
+
+	    		if(this.callback){
+	    			this.callback(this);
+	    			this.callback = false;
+	    		}
 	    	}else{
 	    		this.textboxText.setText(this.textStages[this.textStageIndex]);
 	    	}
@@ -126,6 +138,7 @@ MainState.prototype = {
 	    		this.actionTile.properties.bling = this.player.item1.displayName.replace(" ", "");
 	    		this.level.blings[this.actionTile.properties.action].item = this.actionTile.properties.bling;
 	    		this.player.item1 = this.newItem;
+	    		this.player.pickup(this, this.newItem, true);
 	    		this.stopSwapping();
 	    	}
 
@@ -135,6 +148,7 @@ MainState.prototype = {
 	    		this.actionTile.properties.bling = this.player.item2.displayName.replace(" ", "");
 	    		this.level.blings[this.actionTile.properties.action].item = this.actionTile.properties.bling;
 	    		this.player.item2 = this.newItem;
+	    		this.player.pickup(this, this.newItem, true);
 	    		this.stopSwapping();
 	    	}
 	 	}else{
@@ -144,7 +158,7 @@ MainState.prototype = {
 	    }
 	},
 
-	showText: function(textStages){
+	showText: function(textStages,callback){
 		this.textStages = textStages;
 		this.textStageIndex = 0;
 		this.textDisplayed = true;
@@ -155,9 +169,15 @@ MainState.prototype = {
 	    this.textbox.bringToTop();
 	    this.textboxText.parent.bringToTop(this.textboxText);
 	    this.textboxName.parent.bringToTop(this.textboxName);
+        this.textbox.x = 60 + game.camera.x;
+        this.textbox.y = HEIGHT-250 + game.camera.y;
+        this.textboxText.x = 75 + game.camera.x;
+        this.textboxText.y = HEIGHT-185 + game.camera.y;
+        this.textboxName.x = 75 + game.camera.x;
+        this.textboxName.y = HEIGHT-228 + game.camera.y;
 
 	    this.textboxText.setText(textStages[0]);
-
+	    this.callback = callback;
 	},
 
 	showSwapForDialog: function(newItem, actionTile){

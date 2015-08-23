@@ -80,7 +80,7 @@ Level.prototype = {
 
 		var tiles = this._getNonSolidTiles();
 		if(id == "world"){
-			for(var i = 0; i < 100; i++){
+			for(var i = 0; i < 10; i++){
 				var row = 0;
 				do {
 					var row = Math.floor(Math.random()*tiles.length);
@@ -99,15 +99,18 @@ Level.prototype = {
 		
 	},
 
-	handleTeleport: function(teleportSpotTile, player){
-		this._createMap(teleportSpotTile.properties.destination);
+	handleTeleport: function(teleportSpotTile, player, main){
+		if(this.hasKey(teleportSpotTile.properties.destination, player, main)){
+			this._createMap(teleportSpotTile.properties.destination);
 
-		var location = teleportSpotTile.properties.location;
-		var locationParts = location.split(",");
+			var location = teleportSpotTile.properties.location;
+			var locationParts = location.split(",");
 
-		player.sprite.x = parseInt(locationParts[0])*this.currentMap.tileWidth + 16;
-		player.sprite.y = parseInt(locationParts[1])*this.currentMap.tileHeight + 16;
-		player.sprite.bringToTop();
+			player.sprite.x = parseInt(locationParts[0])*this.currentMap.tileWidth + 16;
+			player.sprite.y = parseInt(locationParts[1])*this.currentMap.tileHeight + 16;
+			player.sprite.bringToTop();
+			game.camera.focusOn(player.sprite);
+		}
 	},
 
 	handleAction: function(actionTile, main){
@@ -177,6 +180,129 @@ Level.prototype = {
 		}
 
 		return tiles;
+	},
+
+	_nonJackedGetNonSolidTiles: function(){
+		var tiles = this.collisionLayer.layer.data.slice(0);
+		for(var row = tiles.length - 1; row >= 0; row--){
+			tiles[row] = tiles[row].slice(0);
+
+			for(var col = tiles[row].length - 1; col >= 0; col--){
+				if(tiles[row][col].index != -1){
+					tiles[row].splice(col, 1);
+				}
+			}
+		}
+
+		return tiles;
+	},
+
+	hasKey: function(destination, player, main){
+		if(destination == "mansion"){
+			if(!player.unlockedMansion && ((player.item1 && player.item1.displayName == "Mansion Key") || (player.item2 && player.item2.displayName == "Mansion Key"))){
+				main.showText(["(The Mansion Key fits the lock and the door squeaks\n open.)",
+					"It's quiet inside.  I'm not so sure I want to figure out what \n happened to Dr. Steven anymore."]);
+				if(player.item1 && player.item1.displayName == "Mansion Key"){
+					player.item1 = null;
+				}else{
+					player.item2 = null;
+				}
+				player.unlockedMansion = true;
+			}else if(player.unlockedMansion){
+				return true;
+			}else{
+				main.showText(["Hmm.  This is the Dr. Steven's house.  It's bigger\n than I remember.",
+					"The door seems to be locked, and the house in good condition,\n but nobody is answering the door.",
+					"Could anybody be inside?",
+					"I should see if I can find the key down at the diner.  Dr. \n Steven used to go there with his wife often.",
+					"Maybe he left a spare with the owner?"]);
+				return false;
+			}
+		}else if(destination == "restaraunt"){
+			if(!player.unlockedRestaraunt && (((player.item1 && player.item1.displayName == "boombox") && (player.item2 && player.item2.displayName == "batteries")) ||
+				((player.item1 && player.item1.displayName == "batteries") && (player.item2 && player.item2.displayName == "boombox")))){
+					main.showText(["Okay, here goes nothing.",
+						"(you smartly go around back and place the boombox \njust outside the door, then turn it on and run.)",
+						"(After a few moments, you notice the building has\n mostly cleared of zombies.)",
+						"Alright, that worked like a charm!"]);
+						player.unlockedRestaraunt = true;
+
+						player.item1 = null;
+						player.item2 = null;
+					return false;
+			}else if(player.unlockedRestaraunt){
+				return true;
+			}else{
+				main.showText(["Ah, the Old Fox Den.  Our small town's\n only restaraunt.",
+					"I used to go here often when I was younger, but now,\n not so much.",
+					"I hope old Farmer Green and his wife are okay.",
+					"(You go to open the door, but inside you notice a huge crowd\n of zombies.)",
+					"Whoa!  I can't go in there right now.  Maybe I can set\n something up to lure them out the back door?",
+					"I should explore a bit and see what I can find."]);
+				return false;
+			}
+		}else if(destination == "townhall"){
+			if((player.item1 && player.item1.displayName == "Town Hall Key") || (player.item2 && player.item2.displayName == "Town Hall Key")){
+				if(!player.warnHall){
+					player.warnHall = true;
+					main.showText(["Finally, I can get to the bottom of this whole situation"])
+					return false;
+				}else{
+					return true;
+				}
+				
+			}else{
+				main.showText(["(You try to door, only to find it locked).",
+					"Something really bad must have happend for the town \nhall to be locked like this.",
+					"The only days I've ever seen it locked were holidays.\n Even during a union strike the mayor was taking meetings.",
+					"(You knock on the door, but nobody answers)",
+					"It looks dead inside, I'm not sure anyone's inside. \n but how will I get in?",
+					"I know!  Dr. Steven had a spare key for the city hall.\n Maybe he'll lend it to me.",
+					"That is, if he's still even alive...",
+					"Can't think like that right now.  I need that key.\n  His house was the mansion on the west side of town."]);
+				return false;
+			}
+
+		}else if(destination == "houseD"){
+			if(!player.houseDWarning){
+				main.showText(["This is my house, but I can hardly recognize it.\n It seems like nobody has been here in months.",
+					"I can't believe this is all happening.  It's like I'm\n the only one left who hasn't been infected or gone crazy."]);
+				player.houseDWarning = true;
+				return false;
+			}else{
+				return true;
+			}
+		}else if(destination == "school"){
+			if(!player.schoolWarning){
+				main.showText(["The school.  I haven't been here in years.\n  It hasn't changed much, except for the fact that there's\n no children.",
+					"There might be something useful inside.  I should\n definately check it out.",
+					"(As you reach for the door, a horrible scream comes from\n inside.)",
+					"Whoa.  When I enter I better be ready to face whatever that\n was."]);
+					player.schoolWarning = true;
+					return false;
+			}else{
+				return true;
+			}
+		}else if(destination == "police"){
+			if(!player.unlockedPolice && !player.hasGun){
+				main.showText(["Even the police station is dark and looks abandoned.\n I don't know if anyone's been here for months.",
+					"Looks like there's a lot of activity inside.  I don't want to \n go in there without something to defend myself.",
+					"I should search around some more."]);
+
+				player.unlockedPolice = true;
+				return false;
+			}else if(player.unlockedPolice || player.hasGun){
+				if(player.warningPolice){
+					return true;
+				}else{
+					player.warningPolice = true;
+					main.showText(["Normally this is the first place I'd come \n to when something dangerous was going on. \n",
+						"Now, with the number of sick people inside, I'm\n pretty sure this is the last place I should be."])
+				}
+			}
+		}else{
+			return true;
+		}
 	}
 
 

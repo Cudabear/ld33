@@ -9,17 +9,18 @@ Player.prototype = {
 	wasInput: false,
 
 	weapons: [],
-	ammunition: 5,
+	hasGun: true,
+	ammunition: 12,
 	clipSize: 12,
 	ammunitionText: null,
-	clips: 5,
+	clips: 0,
 
 	item1: null,
 	item2: null,
 	item1Text: null,
 	item2Text: null,
 
-	health: 50,
+	health: 5,
 	healthText: null,
 	getHitCooldown: 0,
 
@@ -37,11 +38,10 @@ Player.prototype = {
 
 		this.weapons.push(new Gun(this));
 
-		this.item1 = ItemFactory.medkit();
-		this.item2 = ItemFactory.boombox();
+		this.item2 = ItemFactory.TownHallKey();
 		this.item1Text = game.add.bitmapText(0, 0, 'font', 'item2text', 16);
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
-		this.ammunitionText = game.add.bitmapText(0, 0, 'font', 'blah', 16);
+		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
 		this.healthText = game.add.bitmapText(0, 0, 'font', 'blah', 16);
 	},
 
@@ -85,7 +85,9 @@ Player.prototype = {
 			}else{
 				this.item2Text.setText("");
 			}
-			this.ammunitionText.setText('Ammo: '+this.ammunition+'/'+this.clipSize+' x '+this.clips);
+			if(this.hasGun){
+				this.ammunitionText.setText('Ammo: '+this.ammunition+'/'+this.clipSize+' x '+this.clips);
+			}
 			this.healthText.setText('Health: ' + this.getHealthText());
 			this.ammunitionText.x = this.sprite.x - 80;
 			this.ammunitionText.y = this.sprite.y + 20;
@@ -95,6 +97,24 @@ Player.prototype = {
 			this.item2Text.alpha = 1;
 			this.healthText.alpha = 1;
 			this.ammunitionText.alpha = 1;
+			this.item1Text.parent.bringToTop(this.item1Text);
+			this.item2Text.parent.bringToTop(this.item2Text);
+			this.ammunitionText.parent.bringToTop(this.ammunitionText);
+			this.healthText.parent.bringToTop(this.healthText);
+
+			if(game.input.keyboard.isDown(Phaser.Keyboard.E)){
+				if(this.item1 && this.item1.displayName == "medkit"){
+					this.health += 3;
+					this.item1 = null;
+				}else if(this.item2 && this.item2.displayName == "medkit"){
+					this.health += 3;
+					this.item1 = null;
+				}
+
+				if(this.health < 5){
+					this.health = 5;
+				}
+			}
 		}else{
 			this.sprite.body.velocity.y = 0;
 			this.sprite.body.velocity.x = 0;
@@ -143,7 +163,9 @@ Player.prototype = {
 	},
 
 	handleClick: function(enemies, collisionLayer){
-		this.weapons[0].shoot(collisionLayer, enemies);
+		if(this.hasGun){
+			this.weapons[0].shoot(collisionLayer, enemies);
+		}
 	},
 
 	render: function(){
@@ -158,10 +180,71 @@ Player.prototype = {
 		}
 	},
 
-	pickup: function(){
-		if(!this.item1){
-			return true;
-		}else if(!this.item2){
+	pickup: function(main, item, forceText){
+		if(!this.item1 || !this.item2 || item.displayName == "gun" || item.displayName == "ammo" || forceText){
+			if(item.displayName == "medkit"){
+				main.showText(["This looks like a standard issue military medical kit...",
+					"What's it doing around here?  We only had basic supplies\n in this hospital.",
+					"Whatever.  I'm going to pick it up anyway.",
+					"(hold Q and press E to heal when injured)"]);
+			}else if(item.displayName == "boombox"){
+				main.showText(["My old boombox!  I haven't used this thing in \n so many years.  It's just not as useful anymore.",
+					"However, if I cranked this thing up loud it would do a \ngreat job of luring those sick people away from something.",
+					"Of course, they'd destroy it then...",
+					"A necessary sacrafice, I suppose.  It'll need batteries\n to work, these are corroded and old."]);
+			}else if(item.displayName == "gun"){
+				main.showText(["Whoa, what's a gun this doing at a place like this?",
+					"Maybe there was some kind of last stand here.",
+					"As much as I'd hate to shoot anyone, I'm going to take\n this just in case I need it.",
+					"Not much ammunition, though.  I'll have to look for more.",
+					"*CRASSHHHHHHH*",
+					"AHH! What the hell was that behind me?!",
+					"(hold shift and use the mouse to aim, then click\n to shoot)"]);
+				this.hasGun = true;
+				this.ammunition = 12;
+				this.clips = +2;
+
+				var enemy = new Zombie(9*32, 7*32);
+				enemy.create();
+				enemy.health = 9;
+				enemy.speed *= 1.3;
+				enemy.onDead = function(){
+					main.showText(["Oh my God, I'm so sorry, I... you wouldn't stop...",
+						"I had to... to save my own life..",
+						"...",
+						"I need to move on."]);
+				};
+				main.level.enemies.push(enemy);
+			}else if(item.displayName == "batteries"){
+				main.showText(["Cool, batteries.  These will be useful"]);
+			}else if(item.displayName == "ammo"){	
+				if(this.hasGun){
+					main.showText(["Excellent, another magazine of ammunition for my pistol."]);
+				}else{
+					main.showText(["Hmm, a magazine of ammunition for a pistol.  Could come in\n handy if I find a gun."]);
+				}
+				this.weapons[0].shootCooldown = 180;
+				this.clips += 1;
+			}else if(item.displayName == "Mansion Key"){	
+				main.showText(["Finally, the key to Dr. Steven's Mansion.",
+					"Maybe finally I can figure out what's going on here.  \n Or at the very least, find someone who hasn't\n been infected by this virus.",]);
+			}else if(item.displayName == "Town Hall Key"){	
+				main.showText(["Well, here it is.  The key to the \n town hall.",
+					"Poor Dr. Steven.  He sacraficed his life to save \n mine.  If Not for him, I would be one of those mindless\n monsters.\n",
+					"I wish there was something, anything I could \n do to make this right again.  But what is there to be done?",
+					"I should get to the Town Hall and see if anyone \n is bunkered down there.  Maybe then I can \n Use what I learned so far and put it to good use."])
+			}
+
+
+
+			if(item.displayName != "gun" && item.displayName != "ammo" && !forceText){
+				if(!this.item1){
+					this.item1 = item;
+				}else{
+					this.item2 = item;
+				}
+			}
+
 			return true;
 		}else{
 			return false;

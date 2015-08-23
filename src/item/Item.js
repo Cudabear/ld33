@@ -12,5 +12,7 @@ ItemFactory = {
 	MansionKey: function(){return new Item("Mansion Key", function(){ })},
 	TownHallKey: function(){return new Item("Town Hall Key", function(){ })},
 	FireExtinguisher: function(){return new Item("Fire Extinguisher", function(){ })},
-	FireAxe: function(){return new Item("Fire Axe", function(){ })}
+	FireAxe: function(){return new Item("Fire Axe", function(){ })},
+	gun: function(){return new Item("gun")},
+	ammo: function(){return new Item("ammo")}
 }
