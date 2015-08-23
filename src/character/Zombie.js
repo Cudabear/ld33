@@ -1,4 +1,4 @@
-Zombie = function(x, y) {this.startX = x + 12; this.startY = y + 12; }
+Zombie = function(x, y) {this.startX = x + 12; this.startY = y; }
 
 Zombie.prototype = {
 	sprite: null,
@@ -10,8 +10,10 @@ Zombie.prototype = {
 	moveArray: [],
 	currentStep: 0,
 	isMoving: false,
-	speed: 5,
+	speed: 50,
+	isStunned: false,
 
+	health: 3,
 
 	create: function(){
 		this.sprite = game.add.sprite(this.startX, this.startY, 'zombie1');
@@ -24,63 +26,123 @@ Zombie.prototype = {
 		this.sprite.animations.add('walk', [6, 7, 8, 9]);
 	},
 
-	update: function(player, map){
-		this.sprite.animations.play('walk', 8, false);
-
-		if(this.scanCooldown > 20){
-			if(Util.getDistanceBetweenSprites(this.sprite, player.sprite) <= this.scanRange){
-				this.moveToTile(Util.tileUnderSprite(player.sprite, map), player, map);
-			}
-		
-			this.scanCooldown = 0;	
+	update: function(player, map, collisionLayer){
+		if(this.sprite.body.velocity.x > 0 || this.sprite.body.velocity.y > 0){
+			this.sprite.animations.play('walk', 8, false);
 		}else{
-			this.scanCooldown++;
+			this.sprite.animations.play('idle', 2, false);
 		}
 
+		// if(Util.getDistanceBetweenSprites(this.sprite, player.sprite) <= this.scanRange){
+		// 	if(player.sprite.y - 8 > this.sprite.y){
+		// 		if(this.sprite.body.velocity.y < this.speed){
+		// 			this.sprite.body.velocity.y += 5;
+		// 		}
+		// 	}else if(player.sprite.y + 8 < this.sprite.y){
+		// 		if(this.sprite.body.velocity.y > -this.speed){
+		// 			this.sprite.body.velocity.y -= 5;
+		// 		}
+		// 	}else{
+		// 		this.sprite.body.velocity.y /= 2;
+		// 	}
 
-		if(this.currentStep < this.moveArray.length){
-            var destTile = this.moveArray[this.currentStep];
+		// 	if(player.sprite.x - 8 > this.sprite.x){
+		// 		if(this.sprite.body.velocity.x < this.speed){
+		// 			this.sprite.body.velocity.x += 5;
+		// 		}
+		// 	}else if(player.sprite.x + 8 < this.sprite.x){
+		// 		if(this.sprite.body.velocity.x > -this.speed){
+		// 			this.sprite.body.velocity.x -= 5;
+		// 		}
+		// 	}else{
+		// 		this.sprite.body.velocity.x /= 2;
+		// 	}
+		// }else{
+			if(this.scanCooldown == 0){
+				this.scanCooldown = 300;
 
-            if(destTile.x*map.tileWidth + 12 < this.sprite.x){
-                this.sprite.x -= this.speed;
+				if(Math.random() >= 0.5){
+					this.moveArray[0] = Math.random()*this.speed*2 - this.speed;
+					this.moveArray[1] = Math.random()*this.speed*2 - this.speed;
+				}else{
+					this.moveArray[0] = 0;
+					this.moveArray[1] = 0;
+				}
+			}else{
+				this.scanCooldown--;
 
-                if(destTile.x*map.tileWidth + 12 > this.sprite.x){
-                    this.sprite.x = destTile.x*map.tileWidth + 12;
-                }
-            }else if(destTile.x*map.tileWidth + 12 > this.sprite.x){
-                this.sprite.x += this.speed;
+				if(this.sprite.body.velocity.x < this.moveArray[0]){
+					if(!this.sprite.body.blocked.down){
+						this.sprite.body.velocity.x += 5;
+					}else{
+						this.sprite.body.velocity.x = 0;
+					}
+				}else if(this.sprite.body.velocity.x > this.moveArray[0]){
+					if(!this.sprite.body.blocked.up){
+						this.sprite.body.velocity.x -= 5;
+					}else{
+						this.sprite.body.velocity.x = 0;
+					}
+				}
 
-                if(destTile.x*map.tileWidth+12  < this.sprite.x){
-                    this.sprite.x = destTile.x*map.tileWidth + 12;
-                }
-            }
+				if(this.sprite.body.velocity.y < this.moveArray[1]){
+					if(!this.sprite.body.blocked.right){
+						this.sprite.body.velocity.y += 5;
+					}else{
+						this.sprite.body.velocity.y = 0;
+					}
+				}else if(this.sprite.body.velocity.y > this.moveArray[1]){
+					if(!this.sprite.body.blocked.left){
+						this.sprite.body.velocity.y -= 5;
+					}else{
+						this.sprite.body.velocity.y = 0;
+					}
+				}
+			}
+		//}
 
-            if(destTile.y*map.tileHeight+ 12 < this.sprite.y){
-                this.sprite.y -= this.speed;
 
-                if(destTile.y*map.tileHeight+ 12 > this.sprite.y){
-                    this.sprite.y = destTile.y*map.tileHeight+ 12;
-                }
-            }else if(destTile.y*map.tileHeight+ 12 > this.sprite.y){
-                this.sprite.y += this.speed;
+        if(this.isStunned){
+	        if(this.sprite.body.velocity.x > 0){
+	        	this.sprite.body.velocity.x -= 10;
 
-                if(destTile.y*map.tileHeight+ 12 < this.sprite.y){
-                    this.sprite.y = destTile.y*map.tileHeight+ 12;
-                }
-            }
+	        	if(this.sprite.body.velocity.x < 0){
+	        		this.sprite.body.velocity.x = 0;
+	        		this.isStunned = false;
+	        	}
+	        }else if(this.sprite.body.velocity.x < 0){
+	        	this.sprite.body.velocity.x += 10;
 
-            if(destTile.y*map.tileHeight+12 === this.sprite.y && destTile.x*map.tileWidth+12 === this.sprite.x){
-                this.currentStep++;
+	        	if(this.sprite.body.velocity.x > 0){
+	        		this.sprite.body.velocity.x = 0;
+	        		this.isStunned = false;
+	        	}
+	        }
 
-                if(this.currentStep >= this.moveArray.length){
-                    this.currentStep = 0;
-                    this.moveArray = [];
-                    this.isMoving = false;
+	        if(this.sprite.body.velocity.y > 0){
+	        	this.sprite.body.velocity.y -= 10;
 
-                    this.startX = destTile.x;
-                    this.startY = destTile.y;
-                }
-            }
+	        	if(this.sprite.body.velocity.y < 0){
+	        		this.sprite.body.velocity.y = 0;
+	        		this.isStunned = false;
+	        	}
+	        }else if(this.sprite.body.velocity.y < 0){
+	        	this.sprite.body.velocity.y += 10;
+
+	        	if(this.sprite.body.velocity.y > 0){
+	        		this.sprite.body.velocity.y = 0;
+	        		this.isStunned = false;
+	        	}
+	        }
+	    }
+
+        game.physics.arcade.collide(this.sprite, collisionLayer);
+        game.physics.arcade.collide(this.sprite, player.sprite, function(){
+        	player.getHit();
+        }, null, this);
+
+        if(this.health === 0){
+        	//die, insect
         }
 	},
 
@@ -88,8 +150,14 @@ Zombie.prototype = {
 
 	},
 
-	moveToTile: function(tile, player, map){
-		this.moveArray = (new AStarSearch(this, tile, map)).getShortestPath();
-		this.currentStep = 0;
+	getShot: function(fromAngle){
+		velocityX = 200 * Math.cos(fromAngle);
+		velocityY = 200 * Math.sin(fromAngle);
+
+		this.sprite.body.velocity.x = velocityX;
+		this.sprite.body.velocity.y = velocityY;
+		this.isStunned = true;
+
+		this.health--;
 	}
 }
