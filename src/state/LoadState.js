@@ -22,10 +22,16 @@ LoadState.prototype = {
         game.load.tilemap('mansion', 'res/lvl/mansion.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap('townhall', 'res/lvl/townhall.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tileset', 'res/img/tileset.png');
+        game.load.image('textbox', 'res/img/textbox.png');
+        game.load.image('itembox', 'res/img/itembox.png');
 
         game.load.atlasJSONHash('guy', 'res/img/guy.png', 'res/img/guyAnim.json');
         game.load.atlasJSONHash('zombie1', 'res/img/zombie1.png', 'res/img/zombieAnim.json');
-        
+        game.load.atlasJSONHash('bling', 'res/img/bling.png', 'res/img/bling.json');
+        game.load.atlasJSONHash('paper', 'res/img/paper.png', 'res/img/paper.json');
+
+        game.load.bitmapFont('font', 'res/img/font.png', 'res/img/font.xml');
+
     },
 
     create: function(){

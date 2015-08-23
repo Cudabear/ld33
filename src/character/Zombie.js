@@ -33,31 +33,31 @@ Zombie.prototype = {
 			this.sprite.animations.play('idle', 2, false);
 		}
 
-		// if(Util.getDistanceBetweenSprites(this.sprite, player.sprite) <= this.scanRange){
-		// 	if(player.sprite.y - 8 > this.sprite.y){
-		// 		if(this.sprite.body.velocity.y < this.speed){
-		// 			this.sprite.body.velocity.y += 5;
-		// 		}
-		// 	}else if(player.sprite.y + 8 < this.sprite.y){
-		// 		if(this.sprite.body.velocity.y > -this.speed){
-		// 			this.sprite.body.velocity.y -= 5;
-		// 		}
-		// 	}else{
-		// 		this.sprite.body.velocity.y /= 2;
-		// 	}
+		if(Util.getDistanceBetweenSprites(this.sprite, player.sprite) <= this.scanRange){
+			if(player.sprite.y - 8 > this.sprite.y){
+				if(this.sprite.body.velocity.y < this.speed){
+					this.sprite.body.velocity.y += 5;
+				}
+			}else if(player.sprite.y + 8 < this.sprite.y){
+				if(this.sprite.body.velocity.y > -this.speed){
+					this.sprite.body.velocity.y -= 5;
+				}
+			}else{
+				this.sprite.body.velocity.y /= 2;
+			}
 
-		// 	if(player.sprite.x - 8 > this.sprite.x){
-		// 		if(this.sprite.body.velocity.x < this.speed){
-		// 			this.sprite.body.velocity.x += 5;
-		// 		}
-		// 	}else if(player.sprite.x + 8 < this.sprite.x){
-		// 		if(this.sprite.body.velocity.x > -this.speed){
-		// 			this.sprite.body.velocity.x -= 5;
-		// 		}
-		// 	}else{
-		// 		this.sprite.body.velocity.x /= 2;
-		// 	}
-		// }else{
+			if(player.sprite.x - 8 > this.sprite.x){
+				if(this.sprite.body.velocity.x < this.speed){
+					this.sprite.body.velocity.x += 5;
+				}
+			}else if(player.sprite.x + 8 < this.sprite.x){
+				if(this.sprite.body.velocity.x > -this.speed){
+					this.sprite.body.velocity.x -= 5;
+				}
+			}else{
+				this.sprite.body.velocity.x /= 2;
+			}
+		}else{
 			if(this.scanCooldown == 0){
 				this.scanCooldown = 300;
 
@@ -99,7 +99,7 @@ Zombie.prototype = {
 					}
 				}
 			}
-		//}
+		}
 
 
         if(this.isStunned){
