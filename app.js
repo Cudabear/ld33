@@ -10,6 +10,7 @@ window.onload = function(){
 	game.state.add('StartupState', new StartupState());
 	game.state.add('LoadState', new LoadState());
 	game.state.add('MainState', new MainState());
+	game.state.add('CreditState', new CreditState());
 
 	//kickoff the starting state
 	game.state.start('LoadState');

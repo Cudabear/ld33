@@ -10,6 +10,7 @@ MainState.prototype = {
 	textDisplayed: false,
 	textStages: [],
 	textStageIndex: [],
+	isDead: false,
 
     preload: function(){
 
@@ -52,57 +53,79 @@ MainState.prototype = {
     },
 
     update: function(){
-    	if(!this.textDisplayed && !this.swapping){
-	    	this.player.update();
-	    	this.level.update();
+    	this.level.update();
+    	if(!this.isDead){
+	    	if(!this.textDisplayed && !this.swapping){
+		    	this.player.update();
+		    	
 
-	    	game.physics.arcade.collide(this.player.sprite, this.level.collisionLayer, function(e, f){ 
-	    		if(f.properties.destination){
-	    			this.level.handleTeleport(f, this.player, this);
-	    		}
+		    	game.physics.arcade.collide(this.player.sprite, this.level.collisionLayer, function(e, f){ 
+		    		if(f.properties.destination){
+		    			if(f.properties.destination != "endgame"){
+		    				this.level.handleTeleport(f, this.player, this);
+		    			}else{
+		    				this.state.start('CreditState');
+		    			}
+		    		}
 
-	    		if(f.properties.action){
-	    			this.level.handleAction(f, this);
-	    		}
-	    	}, null, this);
+		    		if(f.properties.action){
+		    			this.level.handleAction(f, this);
+		    		}
+		    	}, null, this);
 
-	    	for(var i = this.level.enemies.length -1; i >= 0; i--){
-	    		var e = this.level.enemies[i];
+		    	for(var i = this.level.enemies.length -1; i >= 0; i--){
+		    		var e = this.level.enemies[i];
 
-	    		e.update(this.player, this.level.currentMap, this.level.collisionLayer);
+		    		e.update(this.player, this.level.currentMap, this.level.collisionLayer);
 
-	    		this.level.enemies.forEach(function(me){
-	    			game.physics.arcade.collide(me.sprite, e.sprite);
-	    		}, this);
+		    		this.level.enemies.forEach(function(me){
+		    			game.physics.arcade.collide(me.sprite, e.sprite);
+		    		}, this);
 
-	    		if(e.health <= 0){
-	    			if(e.onDead){
-	    				e.onDead();
-	    			}
+		    		if(e.health <= 0){
+		    			if(e.onDead){
+		    				e.onDead();
+		    			}
 
-	    			e.sprite.destroy();
-	    			this.level.enemies.splice(i, 1);
-	    		}
-	    	}
+		    			e.sprite.destroy();
+		    			this.level.enemies.splice(i, 1);
+		    		}
+		    	}
 
-	    	if(this.player.health <= 0){
-	    		this.gameOver();
-	    		this.player.sprite.destroy();
-	    	}
+		    	if(this.player.health <= 0){
+		    		this.gameOver();
+		    	}
 
-	    	
-	    }else{
-	    	this.player.sprite.body.velocity.setTo(0, 0);
-		    this.level.enemies.forEach(function(e){
-		    	e.sprite.body.velocity.setTo(0,0);
-		    }, this);
-	    }
+		    	
+		    }else{
+		    	this.player.sprite.body.velocity.setTo(0, 0);
+			    this.level.enemies.forEach(function(e){
+			    	e.sprite.body.velocity.setTo(0,0);
+			    }, this);
+		    }
 
-	    if(this.swapping){
+		    if(this.swapping){
 
-	    }
+		    }
 
-	    //this.textbox.bringToTop();
+		    //this.textbox.bringToTop();
+		}else{
+			if(this.swapForText.alpha < 1){
+				this.swapForText.alpha += 0.02;
+			}
+
+			if(game.input.keyboard.isDown(Phaser.Keyboard.R)){
+				this.player.health = 5;
+				this.level.createWorld();
+				this.player.sprite.x = 0;
+		        this.player.sprite.y = 8*32;
+		        this.player.sprite.bringToTop();
+		        this.swapForText.alpha = 0;
+		        this.player.sprite.tint = 0xFFFFFF;
+		        this.showText(['That was the strangest feeling, almost as if\n someone in another life was mauled by a zombie.']);
+				this.isDead = false;
+			};
+		}
     },
 
     render: function(){
@@ -169,12 +192,12 @@ MainState.prototype = {
 	    this.textbox.bringToTop();
 	    this.textboxText.parent.bringToTop(this.textboxText);
 	    this.textboxName.parent.bringToTop(this.textboxName);
-        this.textbox.x = 60 + game.camera.x;
-        this.textbox.y = HEIGHT-250 + game.camera.y;
-        this.textboxText.x = 75 + game.camera.x;
-        this.textboxText.y = HEIGHT-185 + game.camera.y;
-        this.textboxName.x = 75 + game.camera.x;
-        this.textboxName.y = HEIGHT-228 + game.camera.y;
+        this.textbox.x = 60 + (this.isDead ?  0 : game.camera.x);
+        this.textbox.y = HEIGHT-250 + (this.isDead ?  0 : game.camera.y);
+        this.textboxText.x = 75 + (this.isDead ?  0 : game.camera.x);
+        this.textboxText.y = HEIGHT-185 + (this.isDead ?  0 : game.camera.y);
+        this.textboxName.x = 75 + (this.isDead ?  0 : game.camera.x);
+        this.textboxName.y = HEIGHT-228 + (this.isDead ?  0 : game.camera.y);
 
 	    this.textboxText.setText(textStages[0]);
 	    this.callback = callback;
@@ -223,6 +246,10 @@ MainState.prototype = {
 	},
 
 	gameOver: function(){
-		console.log('gameover');
+		this.isDead = true;
+		this.swapForText.setText("You are dead.\n Press R to restart.\n You will keep your items and progress.");
+		this.swapForText.x = WIDTH/2 - 300 + game.camera.x; 
+		this.swapForText.y = HEIGHT/2 - 20 + game.camera.y;
+		this.swapForText.parent.bringToTop(this.swapForText);
 	}
 }

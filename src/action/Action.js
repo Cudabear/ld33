@@ -154,6 +154,8 @@ Action.prototype = {
 								}
 							}
 						}
+
+						main.level.currentMap.getTile(16, 17, 3).properties.destination = "endgame";
 						
 					});
 				return true;

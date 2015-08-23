@@ -4,12 +4,12 @@ Player.prototype = {
 	sprite: null,
 
 
-	speed: 400,
+	speed: 100,
 
 	wasInput: false,
 
 	weapons: [],
-	hasGun: true,
+	hasGun: false,
 	ammunition: 12,
 	clipSize: 12,
 	ammunitionText: null,
@@ -20,7 +20,7 @@ Player.prototype = {
 	item1Text: null,
 	item2Text: null,
 
-	health: 5,
+	health: 50,
 	healthText: null,
 	getHitCooldown: 0,
 
@@ -38,7 +38,7 @@ Player.prototype = {
 
 		this.weapons.push(new Gun(this));
 
-		this.item2 = ItemFactory.TownHallKey();
+		//this.item2 = ItemFactory.TownHallKey();
 		this.item1Text = game.add.bitmapText(0, 0, 'font', 'item2text', 16);
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
 		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
