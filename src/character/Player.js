@@ -4,7 +4,7 @@ Player.prototype = {
 	sprite: null,
 
 
-	speed: 200,
+	speed: 400,
 
 	wasInput: false,
 
