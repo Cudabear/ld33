@@ -38,7 +38,7 @@ Player.prototype = {
 
 		this.weapons.push(new Gun(this));
 
-		this.item2 = ItemFactory.MansionKey();
+		//this.item2 = ItemFactory.MansionKey();
 		this.item1Text = game.add.bitmapText(0, 0, 'font', 'item2text', 16);
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
 		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
@@ -157,6 +157,9 @@ Player.prototype = {
 			break;
 			case 1:
 			return "Critical";
+			break;
+			default:
+			return "Excellent";
 			break;
 
 		}
