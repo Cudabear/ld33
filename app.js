@@ -13,5 +13,5 @@ window.onload = function(){
 	game.state.add('CreditState', new CreditState());
 
 	//kickoff the starting state
-	game.state.start('LoadState');
+	game.state.start('StartupState');
 }

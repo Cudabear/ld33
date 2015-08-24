@@ -20,7 +20,7 @@ Zombie.prototype = {
 		game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		this.sprite.anchor.setTo(0.5);
 		this.sprite.body.setSize(24, 24, 0, 12);
-		this.sprite.body.collideWorldBounds = true;
+		//this.sprite.body.collideWorldBounds = true;
 
 		this.sprite.animations.add('idle', [0, 1, 2, 3, 4, 5]);
 		this.sprite.animations.add('walk', [6, 7, 8, 9]);
@@ -159,5 +159,7 @@ Zombie.prototype = {
 		this.isStunned = true;
 
 		this.health--;
+
+		hurtsfx.play();
 	}
 }

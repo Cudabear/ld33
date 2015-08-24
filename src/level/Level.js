@@ -80,7 +80,12 @@ Level.prototype = {
 
 		var tiles = this._getNonSolidTiles();
 		if(id == "world"){
-			for(var i = 0; i < 10; i++){
+			if(fastbgm.isPlaying){
+				fastbgm.stop();
+				slowbgm.play();
+			}
+
+			for(var i = 0; i < 15; i++){
 				var row = 0;
 				do {
 					var row = Math.floor(Math.random()*tiles.length);
@@ -92,8 +97,6 @@ Level.prototype = {
 				enemy.create();
 				this.enemies.push(enemy);
 			}
-
-			
 		}
 
 		

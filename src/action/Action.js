@@ -5,7 +5,7 @@ Action.prototype = {
 	handleAction: function(id, actionTile, main){
 		switch(id){
 			case 1: //game intro
-				main.showText(["What, where am I?",
+				main.showText(["What, where am I? ( click to continue)",
 				 "This is the hospital I work in.  But what am I doing as the\n one in the bed?",
 				  "The last thing I remember is going to bed at my house.\n  Did I have a heart Attack?",
 				  "I don't feel particularly weak or anything...",
@@ -141,6 +141,9 @@ Action.prototype = {
 						var tiles = main.level._nonJackedGetNonSolidTiles();
 						var maxZombies = 10;
 
+						slowbgm.stop();
+						fastbgm.play('', 0, 1, true);
+
 						for(var row = 8; row < tiles.length; row++){
 							for(var col = 0; col < tiles[row].length; col++){
 								var t = tiles[row][col];
@@ -160,10 +163,83 @@ Action.prototype = {
 					});
 				return true;
 			break;
-			case 18:
-
+			case 18: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
 			break;
-			case 19:
+			case 19: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 20: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 21: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 22: //ammo
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 23: //health*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 24: //health*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 25: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 26: //ammo*
+				if(main.player.pickup(main, ItemFactory[actionTile.properties.bling.replace(" ", "")]())){
+					return true;
+				}else{
+					main.showSwapForDialog(ItemFactory[actionTile.properties.bling](), actionTile);
+				}
+			break;
+			case 27:
+				main.showText(["Hmm, what's this?",
+					"\"To whoever finds this:",
+					"You must protect Patient Zero.\n  I know he was the original carrier of the virus,\n but hear me out.",
+					"He is the only one who is immune.\n He is the key to the cure.  Without him, we're\n done for.  He's safely locked away in the \n hospital right now.  Go to him. \n Wake him up.  Protect him.",
+					"Get him to someone who will know \n what to do with his gift.  Just don't, whatever \n you do, let him die.",
+					"He's a good man. I worked with him \n for many years.  He will do what you say. \n",
+					"His name is Edward Earnheardt.",
+					"- Steven Smith\"",
+					"Dr. Steven wrote this?  The poor man.\n  He must have died... trying to protect me.\n  But this means... I'm patient zero?",
+					"I'm the monster! \n Why did he die to save me?!",
+					"Why?!"]);
+					return true;
+			break;
 		}
 	}
 }

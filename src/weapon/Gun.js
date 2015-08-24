@@ -30,6 +30,8 @@ Gun.prototype = {
 				this.shooter.ammunition = this.shooter.clipSize; this.shooter.clips--;
 			}
 		}
+
+		this.shootLineSprite.bringToTop();
 	},
 
 	render: function(){
@@ -38,6 +40,7 @@ Gun.prototype = {
 
 	shoot: function(collisionLayer, enemies){
 		if(this.shootCooldown == 0 && this.shooter.ammunition > 0){
+			shootsfx.play();
 			this.shooter.ammunition--;
 			var startX = this.shooter.sprite.x; 
 			var startY = this.shooter.sprite.y; 

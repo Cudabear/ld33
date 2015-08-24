@@ -1,5 +1,10 @@
 MainState = function(){ }
 
+slowbgm = null;
+fastbgm = null;
+shootsfx = null;
+hurtsfx = null;
+doorsfx = null;
 MainState.prototype = {
 	level: null,
 	player: null,
@@ -50,6 +55,15 @@ MainState.prototype = {
         //default starting position for first map.
         this.player.sprite.x = 0;
         this.player.sprite.y = 8*32;
+
+        slowbgm = game.add.audio('slowbgm');
+        fastbgm = game.add.audio('fastbgm');
+        shootsfx = game.add.audio('shoot');
+        doorsfx = game.add.audio('door');
+        hurtsfx = game.add.audio('hurt');
+        doorsfx.volume = 0.5;
+
+        slowbgm.play('', 0, 1, true);
     },
 
     update: function(){
@@ -62,6 +76,7 @@ MainState.prototype = {
 		    	game.physics.arcade.collide(this.player.sprite, this.level.collisionLayer, function(e, f){ 
 		    		if(f.properties.destination){
 		    			if(f.properties.destination != "endgame"){
+		    				doorsfx.play();
 		    				this.level.handleTeleport(f, this.player, this);
 		    			}else{
 		    				this.state.start('CreditState');

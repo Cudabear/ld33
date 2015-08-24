@@ -4,7 +4,7 @@ Player.prototype = {
 	sprite: null,
 
 
-	speed: 100,
+	speed: 120,
 
 	wasInput: false,
 
@@ -20,7 +20,7 @@ Player.prototype = {
 	item1Text: null,
 	item2Text: null,
 
-	health: 50,
+	health: 5,
 	healthText: null,
 	getHitCooldown: 0,
 
@@ -38,7 +38,7 @@ Player.prototype = {
 
 		this.weapons.push(new Gun(this));
 
-		//this.item2 = ItemFactory.TownHallKey();
+		this.item2 = ItemFactory.MansionKey();
 		this.item1Text = game.add.bitmapText(0, 0, 'font', 'item2text', 16);
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
 		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
@@ -177,6 +177,7 @@ Player.prototype = {
 			this.getHitCooldown = 25;
 			this.sprite.tint = 0xFF0000;
 			this.health--;
+			hurtsfx.play();
 		}
 	},
 
@@ -193,28 +194,37 @@ Player.prototype = {
 					"Of course, they'd destroy it then...",
 					"A necessary sacrafice, I suppose.  It'll need batteries\n to work, these are corroded and old."]);
 			}else if(item.displayName == "gun"){
+				var me = this;
 				main.showText(["Whoa, what's a gun this doing at a place like this?",
 					"Maybe there was some kind of last stand here.",
 					"As much as I'd hate to shoot anyone, I'm going to take\n this just in case I need it.",
 					"Not much ammunition, though.  I'll have to look for more.",
 					"*CRASSHHHHHHH*",
 					"AHH! What the hell was that behind me?!",
-					"(hold shift and use the mouse to aim, then click\n to shoot)"]);
-				this.hasGun = true;
-				this.ammunition = 12;
-				this.clips = +2;
+					"(hold shift and use the mouse to aim, then click\n to shoot)"], function(main){
+						me.hasGun = true;
+						me.ammunition = 12;
+						me.clips = +2;
 
-				var enemy = new Zombie(9*32, 7*32);
-				enemy.create();
-				enemy.health = 9;
-				enemy.speed *= 1.3;
-				enemy.onDead = function(){
-					main.showText(["Oh my God, I'm so sorry, I... you wouldn't stop...",
-						"I had to... to save my own life..",
-						"...",
-						"I need to move on."]);
-				};
-				main.level.enemies.push(enemy);
+						var enemy = new Zombie(9*32, 7*32);
+						enemy.create();
+						enemy.health = 9;
+						enemy.speed *= 1.3;
+						enemy.scanRange = 100*32
+						fastbgm.play('', 0, 1, true);
+						slowbgm.stop()
+						enemy.onDead = function(){
+							main.showText(["Oh my God, I'm so sorry, I... you wouldn't stop...",
+								"I had to... to save my own life..",
+								"...",
+								"I need to move on."]);
+
+							fastbgm.stop();
+							slowbgm.play();
+						};
+						main.level.enemies.push(enemy);
+					});
+
 			}else if(item.displayName == "batteries"){
 				main.showText(["Cool, batteries.  These will be useful"]);
 			}else if(item.displayName == "ammo"){	
