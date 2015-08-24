@@ -108,7 +108,7 @@ Player.prototype = {
 					this.item1 = null;
 				}else if(this.item2 && this.item2.displayName == "medkit"){
 					this.health += 3;
-					this.item1 = null;
+					this.item2 = null;
 				}
 
 				if(this.health < 5){

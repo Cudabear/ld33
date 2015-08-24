@@ -78,6 +78,12 @@ Level.prototype = {
 		}, this);
 		this.enemies.length = []; 
 
+
+		for(var key in this.blings){
+			if(this.blings[key]){
+				this.blings[key].alpha = 0;
+			}
+		}
 		var tiles = this._getNonSolidTiles();
 		if(id == "world"){
 			if(fastbgm.isPlaying){
@@ -162,13 +168,23 @@ Level.prototype = {
 					var actionId = parseInt(tiles[row][col].properties.action);
 
 					if(this.actionsUsed.indexOf(actionId) == -1){
-						var bling = game.add.sprite(tiles[row][col].x*32, tiles[row][col].y*32, 'bling');
-						bling.animations.add('bling', [0, 1, 2, 3, 4, 5, 6, 7]);
-						bling.animations.play('bling', 2, true);
+						var bling;
+
 						if(!this.blings[actionId]){
+							bling = game.add.sprite(tiles[row][col].x*32, tiles[row][col].y*32, 'bling');
+							
+
+						
 							this.blings[actionId] = bling;
 							this.blings[actionId].item = tiles[row][col].properties.bling;
+						}else{
+							bling = this.blings[actionId];
+							this.blings[actionId].alpha = 1;
+							this.blings[actionId].bringToTop();
 						}
+
+						bling.animations.add('bling', [0, 1, 2, 3, 4, 5, 6, 7]);
+						bling.animations.play('bling', 2, true);
 
 						tiles[row][col].properties.bling = this.blings[actionId].item;
 					}else{
