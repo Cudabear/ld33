@@ -32,8 +32,8 @@ LoadState.prototype = {
 
         game.load.bitmapFont('font', 'res/img/font.png', 'res/img/font.xml');
 
-        game.load.audio('slowbgm', 'res/sfx/slowbgm.wav');
-        game.load.audio('fastbgm', 'res/sfx/fastbgm.wav');
+        game.load.audio('slowbgm', 'res/sfx/slowbgm.ogg');
+        game.load.audio('fastbgm', 'res/sfx/fastbgm.ogg');
         game.load.audio('shoot', 'res/sfx/shoot.wav');
         game.load.audio('hurt', 'res/sfx/hit.wav');
         game.load.audio('door', 'res/sfx/door.wav');
