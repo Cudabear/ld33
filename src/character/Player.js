@@ -38,7 +38,8 @@ Player.prototype = {
 
 		this.weapons.push(new Gun(this));
 
-		//this.item2 = ItemFactory.MansionKey();
+		//this.item2 = ItemFactory.boombox();
+		//this.item1 = ItemFactory.TownHallKey();
 		this.item1Text = game.add.bitmapText(0, 0, 'font', 'item2text', 16);
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
 		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
@@ -106,13 +107,14 @@ Player.prototype = {
 				if(this.item1 && this.item1.displayName == "medkit"){
 					this.health += 3;
 					this.item1 = null;
+
 				}else if(this.item2 && this.item2.displayName == "medkit"){
 					this.health += 3;
 					this.item2 = null;
 				}
 
-				if(this.health < 5){
-					this.health = 5;
+				if(this.health > 6){
+					this.health = 6;
 				}
 			}
 		}else{

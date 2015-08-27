@@ -129,6 +129,11 @@ MainState.prototype = {
 				this.swapForText.alpha += 0.02;
 			}
 
+            this.player.sprite.body.velocity.setTo(0, 0);
+                this.level.enemies.forEach(function(e){
+                    e.sprite.body.velocity.setTo(0,0);
+            }, this);
+
 			if(game.input.keyboard.isDown(Phaser.Keyboard.R)){
 				this.player.health = 5;
 				this.level.createWorld();
@@ -138,6 +143,8 @@ MainState.prototype = {
 		        this.swapForText.alpha = 0;
 		        this.player.sprite.tint = 0xFFFFFF;
 		        this.showText(['That was the strangest feeling, almost as if\n someone in another life was mauled by a zombie.']);
+                fastbgm.stop();
+                slowbgm.play();
 				this.isDead = false;
 			};
 		}

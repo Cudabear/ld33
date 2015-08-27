@@ -13,5 +13,9 @@ window.onload = function(){
 	game.state.add('CreditState', new CreditState());
 
 	//kickoff the starting state
-	game.state.start('StartupState');
+    if(window.location.href.indexOf('localhost') == -1){
+	    game.state.start('StartupState');
+    }else{
+        game.state.start('LoadState');
+    }
 }

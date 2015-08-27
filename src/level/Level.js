@@ -127,8 +127,13 @@ Level.prototype = {
 
 		if(this.actionsUsed.indexOf(actionId) == -1){
 			if(this.actionHandler.handleAction(actionId, actionTile, main)){
-				this.actionsUsed.push(actionId);
+				
+				if(actionId != 17){ //if it's the final phone trigger make sure it happens
+					//even if we die or leave and come back.
+					this.actionsUsed.push(actionId);
+				}
 
+				
 				if(!this.blings[actionId]){
 					this.currentMap.removeTile(actionTile.x, actionTile.y, 3);
 				}else{
@@ -243,7 +248,7 @@ Level.prototype = {
 					main.showText(["Okay, here goes nothing.",
 						"(you smartly go around back and place the boombox \njust outside the door, then turn it on and run.)",
 						"(After a few moments, you notice the building has\n mostly cleared of zombies.)",
-						"Alright, that worked like a charm!"]);
+						"Alright, that worked like a charm!"], function(){player.sprite.body.velocity.y = -1;});
 						player.unlockedRestaraunt = true;
 
 						player.item1 = null;
@@ -264,7 +269,7 @@ Level.prototype = {
 			if((player.item1 && player.item1.displayName == "Town Hall Key") || (player.item2 && player.item2.displayName == "Town Hall Key")){
 				if(!player.warnHall){
 					player.warnHall = true;
-					main.showText(["Finally, I can get to the bottom of this whole situation"])
+					main.showText(["Finally, I can get to the bottom of this whole situation"], function(){player.sprite.body.velocity.y = -1;})
 					return false;
 				}else{
 					return true;
@@ -285,7 +290,7 @@ Level.prototype = {
 		}else if(destination == "houseD"){
 			if(!player.houseDWarning){
 				main.showText(["This is my house, but I can hardly recognize it.\n It seems like nobody has been here in months.",
-					"I can't believe this is all happening.  It's like I'm\n the only one left who hasn't been infected or gone crazy."]);
+					"I can't believe this is all happening.  It's like I'm\n the only one left who hasn't been infected or gone crazy."], function(){player.sprite.body.velocity.y = -1;});
 				player.houseDWarning = true;
 				return false;
 			}else{
@@ -296,7 +301,7 @@ Level.prototype = {
 				main.showText(["The school.  I haven't been here in years.\n  It hasn't changed much, except for the fact that there's\n no children.",
 					"There might be something useful inside.  I should\n definately check it out.",
 					"(As you reach for the door, a horrible scream comes from\n inside.)",
-					"Whoa.  When I enter I better be ready to face whatever that\n was."]);
+					"Whoa.  When I enter I better be ready to face whatever that\n was."], function(){player.sprite.body.velocity.y = -1;});
 					player.schoolWarning = true;
 					return false;
 			}else{
@@ -316,7 +321,7 @@ Level.prototype = {
 				}else{
 					player.warningPolice = true;
 					main.showText(["Normally this is the first place I'd come \n to when something dangerous was going on. \n",
-						"Now, with the number of sick people inside, I'm\n pretty sure this is the last place I should be."])
+						"Now, with the number of sick people inside, I'm\n pretty sure this is the last place I should be."], function(){player.sprite.body.velocity.y = -1;})
 				}
 			}
 		}else{
