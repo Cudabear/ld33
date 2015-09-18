@@ -25,12 +25,17 @@ MainState.prototype = {
     	game.physics.startSystem(Phaser.Physics.ARCADE);
     	game.input.onDown.add(this.onClick, this);
 
+        //global variable because lazy
+        phaserIlluminated = game.plugins.add(Phaser.Plugin.PhaserIlluminated);
 
-
-        this.level = new Level();
-        this.level.createWorld();
         this.player = new Player();
         this.player.create();
+        this.level = new Level();
+        this.level.createWorld(this.player);
+        this.player.sprite.bringToTop();
+
+        darkMask = game.add.illuminated.darkMask([this.player.playerLamp]);
+        
 
         this.textbox = game.add.sprite(60, HEIGHT - 250, 'textbox');
         this.textboxText = game.add.bitmapText(75, HEIGHT -185, 'font', 'My text goes here. My text goes here. My text goes here. My text goes here. My text goes here. My text goes here. v My text goes here. My text goes here. v My text goes here. My text goes here. My text goes here. My text goes here.', 24);
@@ -148,6 +153,8 @@ MainState.prototype = {
 				this.isDead = false;
 			};
 		}
+
+        darkMask.refresh();
     },
 
     render: function(){

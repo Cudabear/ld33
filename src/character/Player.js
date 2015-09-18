@@ -44,6 +44,9 @@ Player.prototype = {
 		this.item2Text = game.add.bitmapText(0, 0, 'font', 'item1text', 16);
 		this.ammunitionText = game.add.bitmapText(0, 0, 'font', '', 16);
 		this.healthText = game.add.bitmapText(0, 0, 'font', 'blah', 16);
+
+		this.playerLamp = game.add.illuminated.lamp(this.sprite.x, this.sprite.y, {distance: 200, color:'rgba(255,225,255,0.05)', radius: 150});
+		this.playerLamp.createLighting([]);
 	},
 
 	update: function(){
@@ -141,6 +144,14 @@ Player.prototype = {
 		}else{
 			this.sprite.tint = 0xFFFFFF;
 		}
+
+		this.playerLamp.x = this.sprite.x;
+		this.playerLamp.y = this.sprite.y;
+		this.playerLamp.refresh();
+		//this should always be on top of the world;
+		this.playerLamp.bringToTop();
+		this.sprite.bringToTop();
+		darkMask.bringToTop();
 	},
 
 	getHealthText: function(){

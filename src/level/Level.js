@@ -15,8 +15,8 @@ Level.prototype = {
 	windChangeCooldown: 0, 
 
  
-	createWorld: function(){
-		this._createMap('hospital');
+	createWorld: function(player){
+		this._createMap('hospital', player);
 	},
 
 	_createEffects: function(){
@@ -41,7 +41,7 @@ Level.prototype = {
 		}
 	},
 
-	_createMap: function(id){
+	_createMap: function(id, player){
 		if(this.currentMap){
 			this.currentMap.destroy();
 		}
@@ -105,12 +105,13 @@ Level.prototype = {
 			}
 		}
 
-		
+		this._sightBlockers = phaserIlluminated.createOpaqueObjectsFromSolidTiles(this.collisionLayer);
+		player.playerLamp.lighting.objects = this._sightBlockers;
 	},
 
 	handleTeleport: function(teleportSpotTile, player, main){
 		if(this.hasKey(teleportSpotTile.properties.destination, player, main)){
-			this._createMap(teleportSpotTile.properties.destination);
+			this._createMap(teleportSpotTile.properties.destination, player);
 
 			var location = teleportSpotTile.properties.location;
 			var locationParts = location.split(",");
